@@ -7,7 +7,7 @@ using namespace std;
 class TrieNode{
     public:
 		bool isLeaf;
-        class TrieNode* nextChar[26];									//26 possible next pointers of each character
+        class TrieNode* nextChar[26];			//26 possible next pointers of each character
         TrieNode(){														//initializing all values to defualt
             for(int i=0;i<26;i++){
                 nextChar[i]=NULL;
@@ -20,17 +20,17 @@ void insert(class TrieNode *root, string word)
 {
     int length = word.length();
     int index;
-    TrieNode *ptrTrav= new TrieNode;									//creating node to add each character to trie
+    TrieNode *ptrTrav= new TrieNode;			//creating node to add each character to trie
 	ptrTrav=root;
     for (int level=0; level<length; level++)
     {
-        index = (int)word[level]-97;									//normalizing ascii value between 0-25 (26 letters in the alphabet)
+        index = (int)word[level]-97;			//normalizing ascii value between 0-25 (26 letters in the alphabet)
         if (!ptrTrav->nextChar[index])		
-            ptrTrav->nextChar[index] = new TrieNode;					//create new node if not created already for same prefix
+            ptrTrav->nextChar[index] = new TrieNode;	//create new node if not created already for same prefix
  
         ptrTrav = ptrTrav->nextChar[index];
     }
-    ptrTrav->isLeaf = true; 											// mark last node as leaf
+    ptrTrav->isLeaf = true; 				// mark last node as leaf
 }
 
 int main(){
