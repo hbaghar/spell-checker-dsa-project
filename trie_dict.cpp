@@ -6,7 +6,7 @@ using namespace std;
 
 class TrieNode{
     public:
-		bool isLeaf;
+	bool isLeaf;
         class TrieNode* nextChar[26];			//26 possible next pointers of each character
         TrieNode(){														//initializing all values to defualt
             for(int i=0;i<26;i++){
