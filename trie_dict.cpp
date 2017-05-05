@@ -4,6 +4,8 @@
 #include<stdlib.h>
 #include<time.h>
 #include<chrono>		//compile using -std=c++11
+#define MIN(x,y) ((x) < (y) ? (x) : (y))
+int d[100][100];
 using namespace std;
 
 class TrieNode{
@@ -18,40 +20,38 @@ class TrieNode{
             isLeaf=false;
         }
 };
-size_t LD(const std::string &s1, const std::string &s2)
-{
-  const size_t m(s1.size());
-  const size_t n(s2.size());
-  if( m==0 ) return n;
-  if( n==0 ) return m;
-  size_t *costs = new size_t[n + 1];
-  for( size_t k=0; k<=n; k++ ) costs[k] = k;
-  size_t i = 0;
-  for ( std::string::const_iterator it1 = s1.begin(); it1 != s1.end(); ++it1, ++i )
-  {
-    costs[0] = i+1;
-    size_t corner = i;
-    size_t j = 0;
-    for ( std::string::const_iterator it2 = s2.begin(); it2 != s2.end(); ++it2, ++j )
-    {
-      size_t upper = costs[j+1];
-      if( *it1 == *it2 )
-      {
-		  costs[j+1] = corner;
-	  }
-      else
-	  {
-		size_t t(upper<corner?upper:corner);
-        costs[j+1] = (costs[j]<t?costs[j]:t)+1;
-	  }
-      corner = upper;
-    }
-  }
-  size_t result = costs[n];
-  delete [] costs;
 
-  return result;
+int LD(string a, string b)
+{
+    int i,j,m,n,temp,tracker;
+
+    m = a.length();
+    n = b.length();
+
+    for(i=0;i<=m;i++)
+    d[0][i] = i;
+    for(j=0;j<=n;j++)
+    d[j][0] = j;
+
+    for (j=1;j<=m;j++)
+    {
+        for(i=1;i<=n;i++)
+        {
+            if(a[i-1] == b[j-1])
+            {
+                tracker = 0;
+            }
+            else
+            {
+                tracker = 1;
+            }
+            temp = MIN((d[i-1][j]+1),(d[i][j-1]+1));
+            d[i][j] = MIN(temp,(d[i-1][j-1]+tracker));
+        }
+    }
+    return(d[n][m]);
 }
+
 void insert(class TrieNode *root, string word)
 {
     int length = word.length();
@@ -93,12 +93,12 @@ void printall(class TrieNode * root, string key){
         }
 	}
     if(root->Word != "")
-		if(LD(root->Word,key)<=2)
+		if(LD(root->Word,key)==1)
 			cout<<" -> "<<root->Word<<endl;
 }
 void suggest(string key,int pos, class TrieNode * root){
 	int index=(int)key[pos]-97;
-    if(/*(key != root->Word) &&*/ (root->nextChar[index] != NULL)){
+    if((key != root->Word)&&(root->nextChar[index] != NULL)){
             suggest(key,pos+1,root->nextChar[index]);
     }
     else{
