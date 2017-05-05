@@ -1,6 +1,8 @@
 # spell-checker-dsa-project
 Spell checker project for Data Structures and Algorithms
 
+Authors: Hriday Baghar (15BEC0467), Shashwat Singh (16BCI0180) and Insaf Muhammed Ali (16BCI0144).
+
  A comparison of performance of data structures in order to store and fetch results from a wordlist.
  
  The following data structures have been used:
