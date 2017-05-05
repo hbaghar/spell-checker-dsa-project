@@ -4,6 +4,8 @@
 #include<stdlib.h>
 #include<time.h>
 #include<chrono>		//compile using -std=c++11
+#define MIN(x,y) ((x) < (y) ? (x) : (y))
+int d[100][100];
 using namespace std;
 
 class TrieNode{
@@ -11,13 +13,44 @@ class TrieNode{
 	bool isLeaf;
 	string Word;
         class TrieNode* nextChar[26];			//26 possible next pointers of each character
-        TrieNode(){														//initializing all values to defualt
+        TrieNode(){								//initializing all values to defualt
             for(int i=0;i<26;i++){
                 nextChar[i]=NULL;
             }
             isLeaf=false;
         }
 };
+
+int LD(string a, string b)
+{
+    int i,j,m,n,temp,tracker;
+
+    m = a.length();
+    n = b.length();
+
+    for(i=0;i<=m;i++)
+    d[0][i] = i;
+    for(j=0;j<=n;j++)
+    d[j][0] = j;
+
+    for (j=1;j<=m;j++)
+    {
+        for(i=1;i<=n;i++)
+        {
+            if(a[i-1] == b[j-1])
+            {
+                tracker = 0;
+            }
+            else
+            {
+                tracker = 1;
+            }
+            temp = MIN((d[i-1][j]+1),(d[i][j-1]+1));
+            d[i][j] = MIN(temp,(d[i-1][j-1]+tracker));
+        }
+    }
+    return(d[n][m]);
+}
 
 void insert(class TrieNode *root, string word)
 {
@@ -36,17 +69,6 @@ void insert(class TrieNode *root, string word)
     ptrTrav->isLeaf = true;				// mark last node as leaf
     ptrTrav->Word=word;
 }
-void find(string key,int pos, class TrieNode *root){
-    if((key != root->Word) && (root->nextChar[key[pos]-97] != NULL))
-        find(key,pos+1,root->nextChar[key[pos]-97]);
-    else if(key==root->Word){
-        cout<<"The spelling of the word '"<<root->Word<<"' is correct"<<endl;
-        //found=1;
-	}
-	else{
-		cout<<key<<" not found!"<<endl;
-	}
-}
 bool search(class  TrieNode *root, string key)
 {
     int level;
@@ -64,6 +86,26 @@ bool search(class  TrieNode *root, string key)
     }
     return (ptrTrav!= NULL && ptrTrav->isLeaf);
 }
+void printall(class TrieNode * root, string key){
+    for(int i=0;i<26;i++){
+        if(root->nextChar[i]!=NULL){
+            printall(root->nextChar[i],key);
+        }
+	}
+    if(root->Word != "")
+		if(LD(root->Word,key)==1)
+			cout<<" -> "<<root->Word<<endl;
+}
+void suggest(string key,int pos, class TrieNode * root){
+	int index=(int)key[pos]-97;
+    if((key != root->Word)&&(root->nextChar[index] != NULL)){
+            suggest(key,pos+1,root->nextChar[index]);
+    }
+    else{
+		printall(root,key);
+	}
+}
+	
 int main(){
     ifstream in("wordlist.txt");
     string word,key;
@@ -81,10 +123,16 @@ int main(){
 	    cout<<"Enter the word to be searched for : ";
 	    cin>>key;
 	    auto start = chrono::high_resolution_clock::now();
-		find(key,0,root);
+		bool found= search(root,key);
 		auto elapsed = std::chrono::high_resolution_clock::now() - start;
 		long long nano = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count();
 		cout<<nano<<" ns taken to perform operation"<<endl;
+		auto start1 = chrono::high_resolution_clock::now();
+		if(!found)
+			suggest(key,0,root);
+		auto elapsed1 = std::chrono::high_resolution_clock::now() - start1;
+		long long nano1 = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed1).count();
+		cout<<nano1<<" ns taken to perform operation"<<endl;
 		cout<<"Press 0 to exit 1 to continue"<<endl;
 		cin>>ch;
 	}
